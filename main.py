@@ -20,28 +20,33 @@ def page_not_found(error):
 
 @app.route("/requirements/", methods=['GET'])
 def requirements():
-    txt = ''
-    with open("requrements.txt") as file:
-        for line in file:
-            txt += line + '<br>'
+    try:
+        txt = ''
+        with open("requrements.txt") as file:
+            for line in file:
+                txt += line + '<br>'
+    except:
+        return ("File broken or not exists")
     return txt
 
 @app.route("/users/generate", methods=['GET'])
 def generate_users():
-    num = request.args.get("number", "")
     try:
-        num = int(num)
-    except:
-        return ("Incorect query parameter")
-    else:
-        n = int(num)
-        if n>0 and n<=1000:
+        n = request.args.get("number")
+        if n == None:
+            n=""
+        n = "100" if n == "" else n
+        n = int(n)
+        if n > 0 and n <= 1000:
             txt = ''
             for x in range(n):
                 txt += fake.name() + " " + fake.email() + '<br>'
             return txt
         else:
             return ("Incorect query parameter")
+    except:
+        return ("Incorect query parameter")
+
 
 @app.route('/generate-password', methods=['POST'])
 def generate_view():
