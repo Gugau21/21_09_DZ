@@ -1,5 +1,4 @@
 import secrets
-
 import flask
 import requests
 
@@ -15,6 +14,13 @@ app = flask.Flask(__name__)
 def index():
     return 'О ні, сторінка не знайдена!', 404
 
+@app.route("/requirements")
+def requirements():
+    txt = ''
+    with open("requrements.txt") as file:
+        for line in file:
+            txt += line + '<br>'
+    return txt
 
 @app.route('/generate-password', methods=['POST'])
 def generate_view():
