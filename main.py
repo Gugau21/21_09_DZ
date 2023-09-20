@@ -1,15 +1,14 @@
 import secrets
-import flask
-import requests
-import faker
+from flask import  Flask, request
+from faker import Faker
 
 
 def generate_password(l):
     return secrets.token_hex(l)[:l - 1]
 
 
-app = flask.Flask(__name__)
-
+app = Flask(__name__)
+fake = Faker()
 
 @app.route("/")
 def index():
@@ -27,7 +26,22 @@ def requirements():
             txt += line + '<br>'
     return txt
 
-
+@app.route("/users/generate", methods=['GET'])
+def generate_users():
+    num = request.args.get("number", "")
+    try:
+        num = int(num)
+    except:
+        return ("Incorect query parameter")
+    else:
+        n = int(num)
+        if n>0 and n<=1000:
+            txt = ''
+            for x in range(n):
+                txt += fake.name() + " " + fake.email() + '<br>'
+            return txt
+        else:
+            return ("Incorect query parameter")
 
 @app.route('/generate-password', methods=['POST'])
 def generate_view():
