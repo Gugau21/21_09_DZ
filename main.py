@@ -1,6 +1,7 @@
 import secrets
 from flask import  Flask, request
 from faker import Faker
+import csv
 
 
 def generate_password(l):
@@ -25,9 +26,10 @@ def requirements():
         with open("requrements.txt") as file:
             for line in file:
                 txt += line + '<br>'
+        return txt
     except:
         return ("File broken or not exists")
-    return txt
+
 
 @app.route("/users/generate", methods=['GET'])
 def generate_users():
@@ -46,6 +48,26 @@ def generate_users():
             return ("Incorect query parameter")
     except:
         return ("Incorect query parameter")
+
+@app.route("/mean/", methods=['GET'])
+def mean():
+    try:
+        hight = 0
+        weight = 0
+        num = 0
+        with open('hw.csv', 'r') as File:
+            reader = csv.DictReader(File)
+            for line in reader:
+                num += 1
+                hight += float(line[' "Height(Inches)"'])
+                weight += float(line[' "Weight(Pounds)"'])
+        hight = hight / num * 2.54
+        weight = weight / num * 0.45359237
+        hight_txt = "Average hight: " + str(hight) + " cm"
+        weight_txt = "Average weight: " + str(weight) + " kg"
+        return hight_txt + "<br>" + weight_txt
+    except:
+        return ("File broken or not exists")
 
 
 @app.route('/generate-password', methods=['POST'])
