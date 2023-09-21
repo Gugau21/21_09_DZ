@@ -1,6 +1,7 @@
+import csv
+
 from flask import  Flask, request, render_template
 from faker import Faker
-import csv
 import requests
 
 app = Flask(__name__)
@@ -30,8 +31,7 @@ def requirements():
 def generate_users():
     try:
         arr = []
-        n = request.args.get("number")
-        n = "100" if n == None or n == "" else n
+        n = request.args.get("number") or 100
         try:
             n = int(n)
         except:
@@ -52,8 +52,8 @@ def mean():
         height = 0
         weight = 0
         num = 0
-        with open('hw.csv', 'r') as File:
-            reader = csv.DictReader(File)
+        with open('hw.csv', 'r') as file:
+            reader = csv.DictReader(file)
             for line in reader:
                 num += 1
                 height += float(line[' "Height(Inches)"'])
