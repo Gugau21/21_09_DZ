@@ -1,12 +1,7 @@
-import secrets
-from flask import  Flask, request
+from flask import  Flask, request, render_template
 from faker import Faker
 import csv
-
-
-def generate_password(l):
-    return secrets.token_hex(l)[:l - 1]
-
+import requests
 
 app = Flask(__name__)
 fake = Faker()
@@ -36,18 +31,18 @@ def generate_users():
     try:
         n = request.args.get("number")
         if n == None:
-            n=""
+            n = ""
         n = "100" if n == "" else n
         n = int(n)
-        if n > 0 and n <= 1000:
-            txt = ''
+        if n > 0 and n <= 10000:
+            arr = []
             for x in range(n):
-                txt += fake.name() + " " + fake.email() + '<br>'
-            return txt
+                arr.append(fake.name() + " " + fake.email())
+            return render_template('generateUsers.html', comments=arr)
         else:
             return ("Incorect query parameter")
     except:
-        return ("Incorect query parameter")
+        return ("Something went wrong")
 
 @app.route("/mean/", methods=['GET'])
 def mean():
@@ -67,28 +62,16 @@ def mean():
         weight_txt = "Average weight: " + str(weight) + " kg"
         return hight_txt + "<br>" + weight_txt
     except:
-        return ("File broken or not exists")
+        return ("Something went wrong")
 
-
-@app.route('/generate-password', methods=['POST'])
-def generate_view():
+@app.route("/space/", methods=['GET'])
+def space():
     try:
-        number = int(flask.request.form["numberPassword"])
-    except (KeyError, ValueError):
-        return flask.redirect('/')
-    password = generate_password(number)
-    return flask.render_template('generate.html', password=password)
-
-
-@app.route("/api-show")
-def api_view():
-    r = requests.get("http://api.open-notify.org/astros.json")
-    return
-
-
-
+        number_of_cosmonauts = requests.get('http://api.open-notify.org/astros.json').json()['number']
+        return "Number of cosmonauts in space: " + str(number_of_cosmonauts)
+    except:
+        return ("Something went wrong")
 
 
 if __name__ == "__main__":
     app.run()
-
