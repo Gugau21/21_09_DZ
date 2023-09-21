@@ -6,9 +6,9 @@ import requests
 app = Flask(__name__)
 fake = Faker()
 
-@app.route("/")
+@app.route("/", methods=['GET'])
 def index():
-    return 'Головна сторінка'
+    return 'Main'
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -23,19 +23,21 @@ def requirements():
                 txt += line + '<br>'
         return txt
     except:
-        return ("File broken or not exists")
+        return ("File is broken or does not exist")
 
 
-@app.route("/users/generate", methods=['GET'])
+@app.route("/users/generate/", methods=['GET'])
 def generate_users():
     try:
+        arr = []
         n = request.args.get("number")
-        if n == None:
-            n = ""
-        n = "100" if n == "" else n
-        n = int(n)
+        n = "100" if n == None or n == "" else n
+        try:
+            n = int(n)
+        except:
+            return ("Incorect query parameter")
+
         if n > 0 and n <= 10000:
-            arr = []
             for x in range(n):
                 arr.append(fake.name() + " " + fake.email())
             return render_template('generateUsers.html', comments=arr)
@@ -47,20 +49,20 @@ def generate_users():
 @app.route("/mean/", methods=['GET'])
 def mean():
     try:
-        hight = 0
+        height = 0
         weight = 0
         num = 0
         with open('hw.csv', 'r') as File:
             reader = csv.DictReader(File)
             for line in reader:
                 num += 1
-                hight += float(line[' "Height(Inches)"'])
+                height += float(line[' "Height(Inches)"'])
                 weight += float(line[' "Weight(Pounds)"'])
-        hight = hight / num * 2.54
+        height = height / num * 2.54
         weight = weight / num * 0.45359237
-        hight_txt = "Average hight: " + str(hight) + " cm"
+        height_txt = "Average height: " + str(height) + " cm"
         weight_txt = "Average weight: " + str(weight) + " kg"
-        return hight_txt + "<br>" + weight_txt
+        return height_txt + "<br>" + weight_txt
     except:
         return ("Something went wrong")
 
